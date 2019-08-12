@@ -1,18 +1,19 @@
 <template>
   <div id="app">
     <h1>Phone Input Demo</h1>
-    <PhoneInput/>
+    <YellowcardPhoneInput locale="NG"/>
   </div>
 </template>
 
 <script>
-import PhoneInput from './components/PhoneInput'
+import YellowcardPhoneInput from './components/PhoneInput'
 
 export default {
   name: 'App',
   components: {
-    PhoneInput
-  }
+    YellowcardPhoneInput
+  },
+  props: ['locale', 'initialValue'],
 }
 </script>
 

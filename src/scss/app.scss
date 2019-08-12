@@ -6,3 +6,13 @@
     url('~/../assets/fonts/Gordita-Regular.otf') format('opentype')
 }
 $primary-font: 'Gordita';
+
+body {
+    font-family: $primary-font, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+  }
+  
+  .phone-input-wrapper {
+    width: 400px;
+  }
