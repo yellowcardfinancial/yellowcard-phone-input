@@ -13,7 +13,7 @@ export default {
   components: {
     YellowcardPhoneInput
   },
-  props: ['locale', 'initialValue'],
+  props: ['locale', 'initialValue']
 }
 </script>
 
