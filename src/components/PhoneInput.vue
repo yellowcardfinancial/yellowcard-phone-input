@@ -41,7 +41,7 @@ export default {
     countries: {
       type: Array,
       default: () => countriesData
-    }
+    },
   },
   data () {
     return {
