@@ -15,6 +15,7 @@
       placeholder="Phone number"
       maxlength="18"
       class="phone-input"
+      @blur="$emit('blur')"
       v-model="inputValue"
     />
 
