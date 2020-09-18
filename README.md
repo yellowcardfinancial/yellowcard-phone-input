@@ -1,21 +1,52 @@
-# yellowcard-phone-input
+# @yellowcard/phone-input-component
 
-> A Vue.js project
+> This is an individual phone input component for retrieving a user's phone number. 
 
-## Build Setup
+## Requirements
+Before installation, the following packages are required:
+- node sass
+- sass-loader
+- style-loader
 
 ``` bash
-# install dependencies
-npm install
+npm i sass-loader node-sass style-loader --save
+```
+## Installaion
 
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+``` bash
+# install component with npm 
+npm install @yellowcard/phone-input-component --save
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Imports
+Import the package directly into the vue component you want to use it in  eg; `App.vue` file
+
+``` javascript
+import YellowcardPhoneInput from '@yellowcard/phone-input-component'
+```
+
+## Usage
+After this has been imported, use the `YellowcardPhoneInput` tag to apply it to your application component.
+``` html
+<YellowcardPhoneInput> </YellowcardPhoneInput>
+```
+or
+```html
+<YellowcardPhoneInput/>
+```
+### Component Props 
+- initialValue: {
+   - type : `String`
+   - default : ''
+}
+
+- locale: {
+    - type: `String`,
+    - default: `NG`
+}
+
+By passing of props to the component, your final usage would look like this
+``` html
+<YellowcardPhoneInput initialValue='value' locale='NG'/>
+```
+<!-- For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader). -->
