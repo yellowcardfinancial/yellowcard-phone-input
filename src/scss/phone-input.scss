@@ -1,11 +1,10 @@
 @font-face {
-  font-family: 'Gordita';
+  font-family: "Gordita";
   font-style: normal;
   font-weight: 400;
-  src:
-  url('~/../assets/fonts/Gordita-Regular.otf') format('opentype')
+  src: url("../assets/fonts/Gordita Medium.otf") format("opentype");
 }
-$primary-font: 'Gordita';
+$primary-font: "Gordita";
 * {
   box-sizing: border-box;
   margin: 0;
@@ -21,7 +20,7 @@ $primary-font: 'Gordita';
   position: relative;
   background: #ffffff;
 }
-.phone-input-wrapper:hover{
+.phone-input-wrapper:hover {
   border-color: #00a2f5 !important;
 }
 .country-select {
@@ -110,12 +109,10 @@ $primary-font: 'Gordita';
 }
 .countries-dropdown li:hover {
   background-color: rgba(#00a2f5, 0.5);
-
 }
 .countries-dropdown li img {
   width: 20px;
   height: 20px;
   object-fit: contain;
   margin-right: 8px;
-  
 }
