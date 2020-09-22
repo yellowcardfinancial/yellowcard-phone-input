@@ -20,6 +20,9 @@
     />
 
     <ul v-show="showOption" class="countries-dropdown">
+      <span class="search-container">
+        <input type="text" class="search-input" />
+      </span>
       <li
         v-for="country in countries"
         :key="country.alpha2Code"
