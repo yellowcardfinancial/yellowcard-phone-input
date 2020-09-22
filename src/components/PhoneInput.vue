@@ -21,17 +21,22 @@
 
     <ul v-show="showOption" class="countries-dropdown">
       <span class="search-container">
-        <input type="text" class="search-input" />
+        <input v-model="searchKey" type="text" class="search-input" />
       </span>
-      <li
-        v-for="country in countries"
-        :key="country.alpha2Code"
-        :value="country.alpha2Code"
-        @click="onClickFlag(country.alpha2Code)"
-      >
-        <img :src="country.flag" />
-        <span> {{ country.name }} </span>
-      </li>
+      <div>
+        <li
+          :class="{
+            'd-none': searchString(country.name)
+          }"
+          v-for="country in countries"
+          :key="country.alpha2Code"
+          :value="country.alpha2Code"
+          @click="onClickFlag(country.alpha2Code)"
+        >
+          <img :src="country.flag" />
+          <span> {{ country.name }} </span>
+        </li>
+      </div>
     </ul>
   </div>
 </template>
@@ -65,7 +70,8 @@ export default {
       countryCode: "",
       inputValue: "",
       phoneNumber: "",
-      showOption: false
+      showOption: false,
+      searchKey: ""
     };
   },
   watch: {
@@ -87,6 +93,21 @@ export default {
     }
   },
   methods: {
+    searchString(name = "") {
+      if (this.searchKey.trim()) {
+        name = this.prepString(name);
+        const searchKey = this.prepString(this.searchKey);
+
+        return !name.includes(searchKey);
+      } else return false;
+    },
+    prepString(x) {
+      return x
+        .trim()
+        .split(" ")
+        .join("")
+        .toLocaleLowerCase();
+    },
     onClickFlag(code) {
       this.flagUrl = this.countriesByCode[code].flag;
       this.countryCode = this.countriesByCode[code].callingCodes[0];
