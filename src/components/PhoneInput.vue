@@ -67,7 +67,7 @@ export default {
         return result;
       }, {}),
       flagUrl: "",
-      countryCode: "",
+      callingCode: "",
       inputValue: "",
       phoneNumber: "",
       showOption: false,
@@ -75,12 +75,12 @@ export default {
     };
   },
   watch: {
-    countryCode: function(val) {
+    callingCode: function(val) {
       this.inputValue = `+${val} `;
     },
     inputValue: function(val) {
       let formattedValue = val.replace(/[^0-9\+\-\s]/g, "");
-      if (!formattedValue.startsWith(`+${this.countryCode} `))
+      if (!formattedValue.startsWith(`+${this.callingCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
       this.$emit("phoneInput", {
@@ -88,7 +88,7 @@ export default {
           .trim()
           .split(" ")
           .join(""),
-        countryCode: this.countryCode
+        callingCode: this.callingCode
       });
     }
   },
@@ -110,7 +110,7 @@ export default {
     },
     onClickFlag(code) {
       this.flagUrl = this.countriesByCode[code].flag;
-      this.countryCode = this.countriesByCode[code].callingCodes[0];
+      this.callingCode = this.countriesByCode[code].callingCodes[0];
       this.showOption = false;
     },
     toggleDropDown() {
@@ -121,7 +121,7 @@ export default {
       const data = await fetch("https://ipapi.co/json/").then(r => r.json());
       const code = data.country;
       this.flagUrl = this.countriesByCode[code].flag;
-      this.countryCode = this.countriesByCode[code].callingCodes[0];
+      this.callingCode = this.countriesByCode[code].callingCodes[0];
     },
     closeDrop(event) {
       this.showOption = false;
@@ -147,7 +147,7 @@ export default {
   },
   created() {
     this.flagUrl = this.countriesByCode[this.locale].flag;
-    this.countryCode = this.countriesByCode[this.locale].callingCodes[0];
+    this.callingCode = this.countriesByCode[this.locale].callingCodes[0];
   },
   async mounted() {
     await this.fetchCountry();
