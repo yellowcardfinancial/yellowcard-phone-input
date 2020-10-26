@@ -79,7 +79,7 @@ export default {
       this.inputValue = `+${val} `;
     },
     inputValue: function(val) {
-      let formattedValue = val.replace(/[^0-9\+\-\s]/g, "");
+      let formattedValue = val.replace(/[^0-9\+\s]/g, "");
       if (!formattedValue.startsWith(`+${this.callingCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
