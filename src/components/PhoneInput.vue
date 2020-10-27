@@ -28,12 +28,12 @@
           :class="{
             'd-none': searchString(country.name)
           }"
-          v-for="country in countries"
-          :key="country.alpha2Code"
-          :value="country.alpha2Code"
-          @click="onClickFlag(country.alpha2Code)"
+          v-for="country in this.$emojiFlags.data"
+          :key="country.code"
+          :value="country.code"
+          @click="onClickFlag(country.code)"
         >
-          <span class="flag">{{$emojiFlags.countryCode(country.alpha2Code).emoji}}</span>
+          <span class="flag">{{country.emoji}}</span>
           <span>{{ country.name }} </span>
         </li>
       </div>
@@ -42,8 +42,6 @@
 </template>
 
 <script>
-import countriesData from "../countries.json";
-
 export default {
   name: "YellowcardPhoneInput",
   props: {
@@ -55,19 +53,15 @@ export default {
       type: String,
       default: "NG"
     },
-    countries: {
-      type: Array,
-      default: () => countriesData
-    }
   },
   data() {
     return {
-      countriesByCode: this.countries.reduce(function(result, country) {
-        result[country.alpha2Code] = country;
+      countriesByCode: this.$emojiFlags.data.reduce(function(result, country) {
+        result[country.code] = country;
         return result;
       }, {}),
       flag: "",
-      callingCode: "",
+      dialCode: "",
       inputValue: "",
       phoneNumber: "",
       showOption: false,
@@ -75,12 +69,13 @@ export default {
     };
   },
   watch: {
-    callingCode: function(val) {
-      this.inputValue = `+${val} `;
+    dialCode: function(val) {
+      this.inputValue = `${val} `;
     },
     inputValue: function(val) {
       let formattedValue = val.replace(/[^0-9\+\-\s]/g, "");
-      if (!formattedValue.startsWith(`+${this.callingCode} `))
+      console.log(formattedValue)
+      if (!formattedValue.startsWith(`${this.dialCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
       this.$emit("phoneInput", {
@@ -88,7 +83,7 @@ export default {
           .trim()
           .split(" ")
           .join(""),
-        callingCode: this.callingCode
+        dialCode: this.dialCode
       });
     }
   },
@@ -110,18 +105,12 @@ export default {
     },
     onClickFlag(code) {
       this.flag = this.$emojiFlags.countryCode(code).emoji
-      this.callingCode = this.countriesByCode[code].callingCodes[0];
+      this.dialCode = this.countriesByCode[code].dialCode;
       this.showOption = false;
     },
     toggleDropDown() {
       const oldOption = !this.showOption;
       this.showOption = oldOption;
-    },
-    async fetchCountry() {
-      const data = await fetch("https://ipapi.co/json/").then(r => r.json());
-      const code = data.country;
-      this.flag = this.$emojiFlags.countryCode(code).emoji
-      this.callingCode = this.countriesByCode[code].callingCodes[0];
     },
     closeDrop(event) {
       this.showOption = false;
@@ -147,10 +136,7 @@ export default {
   },
   created() {
     this.flag = this.$emojiFlags.countryCode(this.locale).emoji
-    this.callingCode = this.countriesByCode[this.locale].callingCodes[0];
-  },
-  async mounted() {
-    await this.fetchCountry();
+    this.dialCode = this.countriesByCode[this.locale].dialCode;
   }
 };
 </script>
