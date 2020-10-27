@@ -28,7 +28,7 @@
           :class="{
             'd-none': searchString(country.name)
           }"
-          v-for="country in this.$emojiFlags.data"
+          v-for="country in emojiFlags.data"
           :key="country.code"
           :value="country.code"
           @click="onClickFlag(country.code)"
@@ -42,6 +42,7 @@
 </template>
 
 <script>
+var emojiFlags = require('emoji-flags');
 export default {
   name: "YellowcardPhoneInput",
   props: {
@@ -56,7 +57,7 @@ export default {
   },
   data() {
     return {
-      countriesByCode: this.$emojiFlags.data.reduce(function(result, country) {
+      countriesByCode: emojiFlags.data.reduce(function(result, country) {
         result[country.code] = country;
         return result;
       }, {}),
@@ -65,7 +66,8 @@ export default {
       inputValue: "",
       phoneNumber: "",
       showOption: false,
-      searchKey: ""
+      searchKey: "",
+      emojiFlags: emojiFlags
     };
   },
   watch: {
