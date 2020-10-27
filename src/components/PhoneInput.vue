@@ -83,7 +83,7 @@ export default {
           .trim()
           .split(" ")
           .join(""),
-        dialCode: this.dialCode
+        callingCode: this.dialCode.substring(1)
       });
     }
   },
