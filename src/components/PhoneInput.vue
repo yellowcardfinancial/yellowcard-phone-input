@@ -21,7 +21,7 @@
 
     <ul v-show="showOption" class="countries-dropdown">
       <span class="search-container">
-        <input v-model="searchKey" type="text" class="search-input" />
+        <input v-model="searchKey" type="text" ref="search" class="search-input" />
       </span>
       <div>
         <li
@@ -74,7 +74,6 @@ export default {
     },
     inputValue: function(val) {
       let formattedValue = val.replace(/[^0-9\+\-\s]/g, "");
-      console.log(formattedValue)
       if (!formattedValue.startsWith(`${this.dialCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
@@ -104,16 +103,25 @@ export default {
         .toLocaleLowerCase();
     },
     onClickFlag(code) {
-      this.flag = this.$emojiFlags.countryCode(code).emoji
+      this.flag = this.countriesByCode[code].emoji
       this.dialCode = this.countriesByCode[code].dialCode;
       this.showOption = false;
     },
     toggleDropDown() {
       const oldOption = !this.showOption;
       this.showOption = oldOption;
+      this.$nextTick(() => {
+        this.$refs.search.focus()
+      })
     },
     closeDrop(event) {
       this.showOption = false;
+    },
+    async fetchCountry() {
+      const data = await fetch("https://ipapi.co/json/").then(r => r.json());
+      const code = data.country;
+      this.flag = this.countriesByCode[code].emoji;
+      this.dialCode = this.countriesByCode[code].dialCode;
     }
   },
   directives: {
@@ -135,8 +143,11 @@ export default {
     }
   },
   created() {
-    this.flag = this.$emojiFlags.countryCode(this.locale).emoji
+    this.flag = this.countriesByCode[this.locale].emoji
     this.dialCode = this.countriesByCode[this.locale].dialCode;
+  },
+  async mounted() {
+    await this.fetchCountry();
   }
 };
 </script>
