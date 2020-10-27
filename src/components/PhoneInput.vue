@@ -2,7 +2,7 @@
   <div id="phoneInput" class="phone-input-wrapper" v-click-outside="closeDrop">
     <div class="country-select" @click="toggleDropDown()">
       <div class="flag-wrapper">
-        <img v-bind:src="flagUrl" class="flag" />
+        <span class="flag">{{flag}}</span>
         <div class="caret">
           <div class="right-slash"></div>
           <div class="left-slash"></div>
@@ -33,8 +33,8 @@
           :value="country.alpha2Code"
           @click="onClickFlag(country.alpha2Code)"
         >
-          <img :src="country.flag" />
-          <span> {{ country.name }} </span>
+          <span class="flag">{{$emojiFlags.countryCode(country.alpha2Code).emoji}}</span>
+          <span>{{ country.name }} </span>
         </li>
       </div>
     </ul>
@@ -66,7 +66,7 @@ export default {
         result[country.alpha2Code] = country;
         return result;
       }, {}),
-      flagUrl: "",
+      flag: "",
       callingCode: "",
       inputValue: "",
       phoneNumber: "",
@@ -109,7 +109,7 @@ export default {
         .toLocaleLowerCase();
     },
     onClickFlag(code) {
-      this.flagUrl = this.countriesByCode[code].flag;
+      this.flag = this.$emojiFlags.countryCode(code).emoji
       this.callingCode = this.countriesByCode[code].callingCodes[0];
       this.showOption = false;
     },
@@ -120,7 +120,7 @@ export default {
     async fetchCountry() {
       const data = await fetch("https://ipapi.co/json/").then(r => r.json());
       const code = data.country;
-      this.flagUrl = this.countriesByCode[code].flag;
+      this.flag = this.$emojiFlags.countryCode(code).emoji
       this.callingCode = this.countriesByCode[code].callingCodes[0];
     },
     closeDrop(event) {
@@ -146,7 +146,7 @@ export default {
     }
   },
   created() {
-    this.flagUrl = this.countriesByCode[this.locale].flag;
+    this.flag = this.$emojiFlags.countryCode(this.locale).emoji
     this.callingCode = this.countriesByCode[this.locale].callingCodes[0];
   },
   async mounted() {
