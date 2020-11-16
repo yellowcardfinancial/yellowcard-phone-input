@@ -1,5 +1,5 @@
 <template>
-  <div id="phoneInput" class="phone-input-wrapper" v-click-outside="closeDrop">
+  <div id="phoneInput" class="phone-input-wrapper" :class="{error : isError}" v-click-outside="closeDrop">
     <div class="country-select" @click="toggleDropDown()">
       <div class="flag-wrapper">
         <span class="flag">{{flag}}</span>
@@ -15,7 +15,7 @@
       placeholder="Phone number"
       maxlength="18"
       class="phone-input"
-      @blur="$emit('blur')"
+      @blur="blurred"
       v-model="inputValue"
     />
 
@@ -43,6 +43,7 @@
 
 <script>
 var emojiFlags = require('emoji-flags');
+var PhoneNumber = require( 'awesome-phonenumber' );
 export default {
   name: "YellowcardPhoneInput",
   props: {
@@ -65,6 +66,7 @@ export default {
       dialCode: "",
       inputValue: "",
       phoneNumber: "",
+      isError: false,
       showOption: false,
       searchKey: "",
       emojiFlags: emojiFlags
@@ -79,16 +81,20 @@ export default {
       if (!formattedValue.startsWith(`${this.dialCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
-      this.$emit("phoneInput", {
-        phone: this.phoneNumber
-          .trim()
-          .split(" ")
-          .join(""),
-        callingCode: this.dialCode.substring(1)
-      });
+      let pn = new PhoneNumber(val).a
+      console.log(pn)
+      
+      if(pn.valid){
+        this.isError = false
+        this.$emit("phoneInput", { phone: pn.number.e164, callingCode: this.dialCode.substring(1) })
+      }
     }
   },
   methods: {
+    blurred(){
+      this.$emit('blur')
+      this.isError = !(new PhoneNumber(this.inputValue).a.valid)
+    },
     searchString(name = "") {
       if (this.searchKey.trim()) {
         name = this.prepString(name);
