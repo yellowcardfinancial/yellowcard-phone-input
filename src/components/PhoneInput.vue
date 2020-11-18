@@ -83,10 +83,10 @@ export default {
       this.phoneNumber = this.inputValue = formattedValue;
       let pn = new PhoneNumber(val).a
       console.log(pn)
+      this.$emit("phoneInput", { phone: pn.number.e164, callingCode: this.dialCode.substring(1), isValid: pn.valid })
       
       if(pn.valid){
         this.isError = false
-        this.$emit("phoneInput", { phone: pn.number.e164, callingCode: this.dialCode.substring(1) })
       }
     }
   },
