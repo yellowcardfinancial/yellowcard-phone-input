@@ -1,8 +1,8 @@
 <template>
-  <div id="phoneInput" class="phone-input-wrapper" v-click-outside="closeDrop">
+  <div id="phoneInput" class="phone-input-wrapper" :class="{error : isError}" v-click-outside="closeDrop">
     <div class="country-select" @click="toggleDropDown()">
       <div class="flag-wrapper">
-        <img v-bind:src="flagUrl" class="flag" />
+        <span class="flag">{{flag}}</span>
         <div class="caret">
           <div class="right-slash"></div>
           <div class="left-slash"></div>
@@ -15,26 +15,26 @@
       placeholder="Phone number"
       maxlength="18"
       class="phone-input"
-      @blur="$emit('blur')"
+      @blur="blurred"
       v-model="inputValue"
     />
 
     <ul v-show="showOption" class="countries-dropdown">
       <span class="search-container">
-        <input v-model="searchKey" type="text" class="search-input" />
+        <input v-model="searchKey" type="text" ref="search" class="search-input" />
       </span>
       <div>
         <li
           :class="{
             'd-none': searchString(country.name)
           }"
-          v-for="country in countries"
-          :key="country.alpha2Code"
-          :value="country.alpha2Code"
-          @click="onClickFlag(country.alpha2Code)"
+          v-for="country in emojiFlags.data"
+          :key="country.code"
+          :value="country.code"
+          @click="onClickFlag(country.code)"
         >
-          <img :src="country.flag" />
-          <span> {{ country.name }} </span>
+          <span class="flag">{{country.emoji}}</span>
+          <span>{{ country.name }} </span>
         </li>
       </div>
     </ul>
@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import countriesData from "../countries.json";
-
+var emojiFlags = require('emoji-flags');
+var PhoneNumber = require( 'awesome-phonenumber' );
 export default {
   name: "YellowcardPhoneInput",
   props: {
@@ -55,44 +55,51 @@ export default {
       type: String,
       default: "NG"
     },
-    countries: {
-      type: Array,
-      default: () => countriesData
-    }
   },
   data() {
     return {
-      countriesByCode: this.countries.reduce(function(result, country) {
-        result[country.alpha2Code] = country;
+      countriesByCode: emojiFlags.data.reduce(function(result, country) {
+        result[country.code] = country;
         return result;
       }, {}),
-      flagUrl: "",
-      callingCode: "",
+      flag: "",
+      dialCode: "",
       inputValue: "",
       phoneNumber: "",
+      isError: false,
       showOption: false,
-      searchKey: ""
+      searchKey: "",
+      emojiFlags: emojiFlags
     };
   },
   watch: {
-    callingCode: function(val) {
-      this.inputValue = `+${val} `;
+    dialCode: function(val) {
+      this.inputValue = `${val} `;
     },
     inputValue: function(val) {
       let formattedValue = val.replace(/[^0-9\+\-\s]/g, "");
-      if (!formattedValue.startsWith(`+${this.callingCode} `))
+      if (!formattedValue.startsWith(`${this.dialCode} `))
         formattedValue = this.phoneNumber;
       this.phoneNumber = this.inputValue = formattedValue;
-      this.$emit("phoneInput", {
-        phone: this.phoneNumber
-          .trim()
-          .split(" ")
-          .join(""),
-        callingCode: this.callingCode
-      });
+      let pn = new PhoneNumber(val).a
+      console.log(pn)
+      if(pn.number.e164){
+        this.$emit("phoneInput", { phone: pn.number.e164, callingCode: this.dialCode.substring(1), isValid: pn.valid })
+      } else {
+        this.$emit("phoneInput", { phone: pn.number.input, callingCode: this.dialCode.substring(1), isValid: pn.valid })
+      }
+      
+      
+      if(pn.valid){
+        this.isError = false
+      }
     }
   },
   methods: {
+    blurred(){
+      this.$emit('blur')
+      this.isError = !(new PhoneNumber(this.inputValue).a.valid)
+    },
     searchString(name = "") {
       if (this.searchKey.trim()) {
         name = this.prepString(name);
@@ -109,24 +116,27 @@ export default {
         .toLocaleLowerCase();
     },
     onClickFlag(code) {
-      this.flagUrl = this.countriesByCode[code].flag;
-      this.callingCode = this.countriesByCode[code].callingCodes[0];
+      this.flag = this.countriesByCode[code].emoji
+      this.dialCode = this.countriesByCode[code].dialCode;
       this.showOption = false;
     },
     toggleDropDown() {
       const oldOption = !this.showOption;
       this.showOption = oldOption;
+      this.$nextTick(() => {
+        this.$refs.search.focus()
+      })
+    },
+    closeDrop(event) {
+      this.showOption = false;
     },
     async fetchCountry() {
       const data = await fetch(
         "http://ipapi.co/json/?key=l4HNjGbqprIaNgbt9vQQfblxrAvC3dh4J3B8IwrphiJklNnYu5"
       ).then(r => r.json());
       const code = data.country;
-      this.flagUrl = this.countriesByCode[code].flag;
-      this.callingCode = this.countriesByCode[code].callingCodes[0];
-    },
-    closeDrop(event) {
-      this.showOption = false;
+      this.flag = this.countriesByCode[code].emoji;
+      this.dialCode = this.countriesByCode[code].dialCode;
     }
   },
   directives: {
@@ -148,8 +158,8 @@ export default {
     }
   },
   created() {
-    this.flagUrl = this.countriesByCode[this.locale].flag;
-    this.callingCode = this.countriesByCode[this.locale].callingCodes[0];
+    this.flag = this.countriesByCode[this.locale].emoji
+    this.dialCode = this.countriesByCode[this.locale].dialCode;
   },
   async mounted() {
     await this.fetchCountry();
