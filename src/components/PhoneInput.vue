@@ -118,7 +118,9 @@ export default {
       this.showOption = oldOption;
     },
     async fetchCountry() {
-      const data = await fetch("https://ipapi.co/json/").then(r => r.json());
+      const data = await fetch(
+        "http://ipapi.co/json/?key=l4HNjGbqprIaNgbt9vQQfblxrAvC3dh4J3B8IwrphiJklNnYu5"
+      ).then(r => r.json());
       const code = data.country;
       this.flagUrl = this.countriesByCode[code].flag;
       this.callingCode = this.countriesByCode[code].callingCodes[0];
