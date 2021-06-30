@@ -1,6 +1,6 @@
 {
   "name": "@yellowcard/phone-input-component",
-  "version": "1.6.6",
+  "version": "1.6.9",
   "description": "Yellowcard UI component module for retrieving a user's phone number.",
   "author": "Merdoth <ucheya97@gmail.com>",
   "main": "./dist/phoneInput.common.js",

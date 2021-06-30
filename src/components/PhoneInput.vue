@@ -8,7 +8,7 @@
     <div class="country-select" @click="toggleDropDown()">
       <div class="flag-wrapper">
         <span class="flag">{{ flag }}</span>
-        <div class="caret">
+        <div class="caret" v-show="selectable">
           <div class="right-slash"></div>
           <div class="left-slash"></div>
         </div>
@@ -24,7 +24,7 @@
       v-model="inputValue"
     />
 
-    <ul v-show="showOption" class="countries-dropdown">
+    <ul v-show="showOption && selectable" class="countries-dropdown">
       <span class="search-container">
         <input
           v-model="searchKey"
@@ -63,7 +63,11 @@ export default {
     },
     locale: {
       type: String,
-      default: "NG"
+      default: null
+    },
+    selectable: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -148,13 +152,20 @@ export default {
       this.showOption = false;
     },
     async fetchCountry() {
-      const data = await fetch(
-        "https://ipapi.co/json/?key=l4HNjGbqprIaNgbt9vQQfblxrAvC3dh4J3B8IwrphiJklNnYu5"
-      ).then(r => r.json());
-      const code = data.country;
+      let data = null
+      let code = null
+      try{
+        console.log("fetching user location from ipstack")
+         data = await fetch("https://api.ipstack.com/check?access_key=c7ad1422bcefe2480a8a13e0ba41a880").then(r => r.json());
+         code = data.country_code;
+      } catch (e) {
+        console.log("ipstack failed, falling back to ipapi...")
+        data = await fetch("https://ipapi.co/json/?key=l4HNjGbqprIaNgbt9vQQfblxrAvC3dh4J3B8IwrphiJklNnYu5").then(r => r.json());
+        code = data.country
+      }
       this.flag = this.countriesByCode[code].emoji;
       this.dialCode = this.countriesByCode[code].dialCode;
-    }
+    },
   },
   directives: {
     "click-outside": {
@@ -175,11 +186,15 @@ export default {
     }
   },
   created() {
+    if(this.locale){
     this.flag = this.countriesByCode[this.locale].emoji;
     this.dialCode = this.countriesByCode[this.locale].dialCode;
+    }
   },
   async mounted() {
+    if(!this.locale){
     await this.fetchCountry();
+    }
   }
 };
 </script>
